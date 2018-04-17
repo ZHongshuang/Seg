@@ -29,7 +29,8 @@ print(opt)
 def validation(feature, net, loader):
     feature.eval()
     net.eval()
-    total_loss = 0
+    total_loss = 0.0
+    num = 0
     for ib, (data, lbls) in enumerate(loader):
         inputs = Variable(data).cuda()
         lbls = [Variable(lbl.float().unsqueeze(1)).cuda() for lbl in lbls]
@@ -40,9 +41,10 @@ def validation(feature, net, loader):
         for msk, lbl in zip(msks, lbls):
             loss += F.binary_cross_entropy(msk, lbl)
         total_loss += loss.data[0]
+        num += data.size(0)
     feature.train()
     net.train()
-    return total_loss / len(loader)
+    return total_loss / num
 
 
 def make_image_grid(img, mean, std):
